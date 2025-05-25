@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/fondo">
+
+
+    <!-- TextViews para mostrar los datos de los movimientos -->
+    <EditText
+        android:id="@+id/editTextNumeroCuenta"
+        android:layout_width="385dp"
+        android:layout_height="74dp"
+        android:layout_marginBottom="16dp"
+        android:hint="Número de Cuenta"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/buttonConsultar"
+        android:layout_width="121dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:text="Consultar" />
+
+    <Button
+        android:id="@+id/buttonBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="onBackButtonClick"
+        android:text="Volver" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="234dp">
+
+        <TextView
+            android:id="@+id/textViewCuenta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:padding="8dp"
+            android:text="Cuenta"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textViewFecha"
+            app:layout_constraintEnd_toStartOf="@+id/textViewFecha"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <TextView
+            android:id="@+id/textViewFecha"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="75dp"
+            android:layout_marginRight="75dp"
+            android:padding="8dp"
+            android:text="Fecha"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textViewAccion"
+            app:layout_constraintStart_toEndOf="@+id/textViewCuenta" />
+
+        <TextView
+            android:id="@+id/textViewTipo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="76dp"
+            android:layout_marginLeft="76dp"
+            android:layout_marginEnd="75dp"
+            android:layout_marginRight="75dp"
+            android:padding="8dp"
+            android:text="Tipo"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textViewFecha"
+            app:layout_constraintEnd_toEndOf="@+id/textViewAccion"
+            app:layout_constraintStart_toStartOf="@+id/textViewFecha" />
+
+        <TextView
+            android:id="@+id/textViewAccion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="Acción"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textViewTipo"
+            app:layout_constraintEnd_toStartOf="@+id/textViewImporte"
+            app:layout_constraintStart_toEndOf="@+id/textViewFecha" />
+
+        <TextView
+            android:id="@+id/textViewImporte"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="Importe"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textViewAccion"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textViewAccion" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- RecyclerView para mostrar los datos de los movimientos -->
+
+    <!-- TextView para mostrar un mensaje de error -->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewMovimientos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/textViewError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="No se encontraron movimientos"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+</LinearLayout>

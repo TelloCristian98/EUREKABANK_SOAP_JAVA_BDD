@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Movimientos y Depósitos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('monsterg1.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #77aaff 3px solid;
+        }
+        header h1 {
+            text-align: center;
+            margin: 0;
+            font-size: 24px;
+        }
+        .form-section {
+            background: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .form-section h2 {
+            margin-top: 0;
+        }
+        .form-section label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        .form-section input[type="text"],
+        .form-section input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-section button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #77aaff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .form-section button:hover {
+            background: #0059b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #77aaff;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Movimientos y Depósitos</h1>
+    </header>
+    <div class="container">
+        <!-- Sección para Leer Movimientos -->
+        <div class="form-section">
+            <h2>Consultar Movimientos</h2>
+            <form id="movimientosForm">
+                <label for="cuentaMovimientos">Número de Cuenta:</label>
+                <input type="text" id="cuentaMovimientos" name="cuenta" required>
+                <button type="submit">Consultar</button>
+            </form>
+            <table id="movimientosTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Importe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Sección para Registrar Depósito -->
+        <div class="form-section">
+            <h2>Registrar Depósito</h2>
+            <form id="depositoForm">
+                <label for="cuentaDeposito">Número de Cuenta:</label>
+                <input type="text" id="cuentaDeposito" name="cuenta" required>
+                <label for="importe">Importe:</label>
+                <input type="number" id="importe" name="importe" step="0.01" required>
+                <button type="submit">Registrar</button>
+            </form>
+            <p id="depositoMensaje"></p>
+        </div>
+    </div>
+    <script>
+        const SOAP_URL = "http://localhost:8080/WS_Eureka/WSEureka";
+
+        document.getElementById('movimientosForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const cuenta = document.getElementById('cuentaMovimientos').value;
+
+            const soapMessage =
+                `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.monster.edu.ec/">
+                    <soapenv:Header/>
+                    <soapenv:Body>
+                        <ws:traerMovimientos>
+                            <cuenta>${cuenta}</cuenta>
+                        </ws:traerMovimientos>
+                    </soapenv:Body>
+                </soapenv:Envelope>`;
+
+            fetch(SOAP_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/xml',
+                    'SOAPAction': ''
+                },
+                body: soapMessage
+            })
+            .then(response => response.text())
+            .then(data => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data, "text/xml");
+                const movimientos = xmlDoc.getElementsByTagName("movimiento");
+                const movimientosTable = document.getElementById('movimientosTable');
+                const tbody = movimientosTable.querySelector('tbody');
+                tbody.innerHTML = '';
+
+                for (let i = 0; i < movimientos.length; i++) {
+                    const row = document.createElement('tr');
+                    const fecha = movimientos[i].getElementsByTagName('fecha')[0].textContent;
+                    const importe = movimientos[i].getElementsByTagName('importe')[0].textContent;
+                    
+                    const fechaCell = document.createElement('td');
+                    fechaCell.textContent = fecha;
+                    const importeCell = document.createElement('td');
+                    importeCell.textContent = importe;
+
+                    row.appendChild(fechaCell);
+                    row.appendChild(importeCell);
+                    tbody.appendChild(row);
+                }
+                movimientosTable.style.display = 'table';
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('depositoForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const cuenta = document.getElementById('cuentaDeposito').value;
+            const importe = document.getElementById('importe').value;
+
+            const soapMessage =
+                `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.monster.edu.ec/">
+                    <soapenv:Header/>
+                    <soapenv:Body>
+                        <ws:regDeposito>
+                            <cuenta>${cuenta}</cuenta>
+                            <importe>${importe}</importe>
+                        </ws:regDeposito>
+                    </soapenv:Body>
+                </soapenv:Envelope>`;
+
+            fetch(SOAP_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/xml',
+                    'SOAPAction': ''
+                },
+                body: soapMessage
+            })
+            .then(response => response.text())
+            .then(data => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data, "text/xml");
+                const estado = xmlDoc.getElementsByTagName("estado")[0].textContent;
+                document.getElementById('depositoMensaje').textContent = estado == 1 ? 'Depósito registrado exitosamente.' : 'Error al registrar el depósito.';
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
